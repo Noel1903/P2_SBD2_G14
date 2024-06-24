@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 class Server {
     constructor() {
@@ -31,6 +33,14 @@ class Server {
     }
 
     listen() {
+        mongoose
+        .connect(process.env.MONGO_URI)
+        .then(() => {
+            console.log('Conectado a la base de datos MongoDBAtlas');
+        })
+        .catch((err) => {
+            console.log('Error al conectarse a la base de datos', err);
+        });
         this.app.listen(this.port, () => {
             console.log('Servidor corriendo en puerto', this.port);
         });
