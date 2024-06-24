@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const author = require('./routes/author');
 require('dotenv').config();
+
 
 class Server {
     constructor() {
@@ -9,7 +11,7 @@ class Server {
         this.port = process.env.PORT || 5000;
 
         this.paths = {
-            auth: '/api/auth'
+            author: '/api/author'
         }
 
         // Middlewares
@@ -29,7 +31,9 @@ class Server {
     }
 
     routes() {
-        this.app.use(this.paths.auth, require('./routes/auth'));
+        //this.app.use(this.paths.author, require('./routes/author'));
+        this.app.use(this.paths.author,author);
+        
     }
 
     listen() {
