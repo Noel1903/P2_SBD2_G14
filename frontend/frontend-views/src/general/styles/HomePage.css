@@ -1,0 +1,26 @@
+.container_hp {
+    margin-top: 25px;
+    text-align: center;
+    width: 100%;
+}
+
+.titulo_hp {
+    font-family: 'Arial', sans-serif; 
+    font-size: 50px; 
+    font-weight: bold; 
+    color: #007bff; 
+    text-align: center; 
+    text-transform: uppercase; 
+    letter-spacing: 2px;
+    margin-bottom: 20px; 
+  }
+
+.titulo_hp:hover {
+    color: #e58908;
+    cursor: pointer;
+  }
+
+.container-img_hp{
+    width: 60%;
+    align-items: center;
+}
