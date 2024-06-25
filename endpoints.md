@@ -2,9 +2,9 @@
 ### NODE
 1. ``npm install``
 2. Crear un archivo con el nombre .env tomando como base el archivo .example.env, esto para poder setear las variables de entorno
-3. ``node app.js`` o ``npm start`` para ejecutar
+3. ``node index.js`` o ``npm start`` para ejecutar estando en la carpeta ``backend``
 
-`NOTA: TODAS LAS IMÁGENES QUE SE REQUIERAN PARA TODAS LAS PANTALLAS, DEBEN DE ENVIARSE EN BASE64 Y DE IGUAL FORMA SE RETORNAN EN BASE64.`
+`NOTA: TODAS LAS IMÁGENES QUE SE REQUIERAN PARA TODAS LAS PANTALLAS, DEBEN DE ENVIARSE EN BASE64`
 
 ### Agregar un autor
 ```
@@ -185,7 +185,7 @@ GET http://localhost:5000/api/user/profile/:id
 
 ### Update Perfil
 ```
-PUT http://localhost:5000/api/user/profile/
+PUT http://localhost:5000/api/user/profile
 ```
 
 #### Body request
