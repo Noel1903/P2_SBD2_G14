@@ -4,7 +4,7 @@ import '../styles/UserPage.css';
 import md5 from 'md5';
 
 const UserPage = ({ userData }) => {
-    const [nombre, setNombre] = useState(userData ? userData.nombreusuario : 'hoas');
+    const [nombre, setNombre] = useState(userData ? userData.nombreusuario : '');
     const [apellido, setApellido] = useState('');
     const [edad, setEdad] = useState('');
     const [telefono, setTelefono] = useState('');
