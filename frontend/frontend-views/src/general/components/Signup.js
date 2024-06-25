@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import NavBar from './MyNavBar';
 import '../styles/Signup.css';
-import md5 from 'md5';
 
 const Signup = () => {
     const [nombre, setNombre] = useState('');
@@ -11,51 +10,53 @@ const Signup = () => {
     const [direccion, setDireccion] = useState('');
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
-    const [fecha_registro, setFecha_Registro] = useState('');
     const [imagen, setImagen] = useState(null);
-    const [imagenObject, setImagenObject] = useState(null);
+    const [imagenBase64, setImagenBase64] = useState('');
 
     const handleImagenChange = (event) => {
         const imagenSeleccionada = event.target.files[0];
-        setImagenObject(event.target.files[0]);
         if (imagenSeleccionada) {
-            setImagen(URL.createObjectURL(imagenSeleccionada));
-
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagen(URL.createObjectURL(imagenSeleccionada));
+                setImagenBase64(reader.result); // Almacenar la cadena completa de Base64
+            };
+            reader.readAsDataURL(imagenSeleccionada);
         }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString();
-        setFecha_Registro(formattedDate);
-        const hashedPassword = md5(contrasena);
-        const formData = new FormData();
-        formData.append('nombre', nombre);
-        formData.append('apellido', apellido);
-        formData.append('edad', edad);
-        formData.append('telefono', telefono);
-        formData.append('direccion', direccion);
-        formData.append('email', email);
-        formData.append('contrasena', hashedPassword);
-        formData.append('fecha_registro', fecha_registro);
-        formData.append('foto_perfil', imagenObject);
-
+        const data = {
+            name: nombre,
+            lastname: apellido,
+            email: email,
+            password: contrasena,
+            imgProfile: imagenBase64,
+            telephone: telefono,
+            address: direccion,
+            age: edad
+        };
+                
         try {
-
-            const response = await fetch('http://localhost:5000/signup/signup', {
+            const response = await fetch('http://localhost:5000/api/user', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             });
-
-            if (response.status === 200) {
+        
+            const responseData = await response.json();
+        
+            if (responseData.ok === true) {
                 // Redirigir a la página de inicio
                 alert("Registro exitoso");
                 window.location.href = '/';
             } else {
                 // Recargar la página
-                alert("Error en el registro");
+                alert("Error en el registro: " + responseData.message);
                 window.location.reload();
             }
         } catch (error) {
@@ -63,6 +64,7 @@ const Signup = () => {
             // Recargar la página
             window.location.reload();
         }
+        
     };
 
     return (
