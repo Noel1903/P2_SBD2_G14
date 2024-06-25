@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import NavBar from './MyNavBar';
 import '../styles/UserPage.css';
-import md5 from 'md5';
 
 const UserPage = ({ userData }) => {
     const [nombre, setNombre] = useState(userData ? userData.nombreusuario : '');
@@ -12,44 +11,49 @@ const UserPage = ({ userData }) => {
     const [email, setEmail] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [imagen, setImagen] = useState(null);
-    const [imagenObject, setImagenObject] = useState(null);
+    const [imagenBase64, setImagenBase64] = useState('');
 
     // Verificar si userData está definido y obtener los valores correspondientes
     const imagenperfil = userData ? userData.fotoperfil : '';
 
     const handleImagenChange = (event) => {
         const imagenSeleccionada = event.target.files[0];
-        setImagenObject(event.target.files[0]);
         if (imagenSeleccionada) {
-            setImagen(URL.createObjectURL(imagenSeleccionada));
-
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagen(URL.createObjectURL(imagenSeleccionada));
+                setImagenBase64(reader.result.split(',')[1]); // Extraer solo la parte base64
+            };
+            reader.readAsDataURL(imagenSeleccionada);
         }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const hashedPassword = md5(contrasena);
-        const formData = new FormData();
-        const Token = localStorage.getItem("token")
-        formData.append('nombre', nombre);
-        formData.append('apellido', apellido);
-        formData.append('edad', edad);
-        formData.append('telefono', telefono);
-        formData.append('direccion', direccion);
-        formData.append('email', email);
-        formData.append('contrasena', hashedPassword);
-        formData.append('foto_perfil', imagenObject);
-        formData.append('token', Token);
-
+        const data = {
+            name: nombre,
+            lastname: apellido,
+            email: email,
+            password: contrasena,
+            imgProfile: imagenBase64,
+            telephone: telefono,
+            address: direccion,
+            age: edad
+        };
+                
         try {
-            const response = await fetch('http://localhost:5000/editperfil/editperfil', {
-                method: 'PUT',
-                body: formData,
+            const response = await fetch('http://localhost:5000/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             });
 
-            const data = await response.json();
-            if (response.status === 200) {
+            const responseData = await response.json();
+        
+            if (responseData.ok === true) {
                 // Redirigir a la página de inicio
                 alert("Actualizacion exitosa ", data.message);
                 window.location.reload();
