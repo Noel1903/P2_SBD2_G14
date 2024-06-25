@@ -21,21 +21,21 @@ const AdminLibros = () => {
   });
 
   useEffect(() => {
-    const fetchLibros = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/books');
-        if (!response.ok) {
-          throw new Error('Error al obtener los libros');
-        }
-        const data = await response.json();
-        setLibros(data);
-      } catch (error) {
-        console.error('Error al obtener los libros', error);
-      }
-    };
-
     fetchLibros();
   }, []);
+
+  const fetchLibros = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/books');
+      if (!response.ok) {
+        throw new Error('Error al obtener los libros');
+      }
+      const data = await response.json();
+      setLibros(data.books);
+    } catch (error) {
+      console.error('Error al obtener los libros', error);
+    }
+  };
 
   const handleToggleEdit = (libroId) => {
     setEditableLibro(editableLibro === libroId ? null : libroId);
@@ -45,7 +45,7 @@ const AdminLibros = () => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setLibros((prevLibros) =>
       prevLibros.map((libro) =>
-        libro.id === libroId ? { ...libro, [field]: value } : libro
+        libro._id === libroId ? { ...libro, [field]: value } : libro
       )
     );
   };
@@ -54,9 +54,10 @@ const AdminLibros = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
+      const base64String = reader.result.split(',')[1]; // Obtiene solo el base64 sin la parte inicial "data:image/png;base64,"
       setLibros((prevLibros) =>
         prevLibros.map((libro) =>
-          libro.id === libroId ? { ...libro, imagen_url: reader.result } : libro
+          libro._id === libroId ? { ...libro, imagen_url: base64String } : libro
         )
       );
     };
@@ -64,15 +65,11 @@ const AdminLibros = () => {
       reader.readAsDataURL(file);
     }
   };
+  
 
   const handleSave = async (libroId) => {
-    const libroToUpdate = libros.find((libro) => libro.id === libroId);
+    const libroToUpdate = libros.find((libro) => libro._id === libroId);
     try {
-      // Verificar si se seleccionó una nueva imagen
-      //if (!libroToUpdate.imagen_url.startsWith('data:image')) {
-        //libroToUpdate.imagen_url = null; // Establecer imagen_url como null si no se seleccionó una nueva imagen
-      //}
-
       const response = await fetch(`http://localhost:5000/api/books/${libroId}`, {
         method: 'PUT',
         headers: {
@@ -84,8 +81,9 @@ const AdminLibros = () => {
       if (!response.ok) {
         throw new Error('Error al actualizar el libro');
       }
-
+      //console.log(libroToUpdate)
       setEditableLibro(null);
+      fetchLibros(); // Actualizar la lista de libros después de guardar cambios
     } catch (error) {
       console.error('Error al actualizar el libro', error);
     }
@@ -101,7 +99,7 @@ const AdminLibros = () => {
         throw new Error('Error al eliminar el libro');
       }
 
-      setLibros((prevLibros) => prevLibros.filter((libro) => libro.id !== libroId));
+      fetchLibros(); // Actualizar la lista de libros después de eliminar
     } catch (error) {
       console.error('Error al eliminar el libro', error);
     }
@@ -120,16 +118,17 @@ const AdminLibros = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewLibro({ ...newLibro, imagen_url: reader.result });
+      const base64String = reader.result.split(',')[1]; // Obtiene solo el base64 sin la parte inicial "data:image/png;base64,"
+      setNewLibro({ ...newLibro, imagen_url: base64String });
     };
     if (file) {
       reader.readAsDataURL(file);
     }
   };
+  
 
   const handleAddNewLibro = async () => {
     try {
-      console.log('Enviando nuevo libro:', newLibro); // Log para verificar datos
       const response = await fetch('http://localhost:5000/api/books', {
         method: 'POST',
         headers: {
@@ -139,12 +138,10 @@ const AdminLibros = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text(); // Obtener texto de error del servidor
-        throw new Error(`Error al agregar el libro: ${errorText}`);
+        throw new Error('Error al agregar el libro');
       }
 
-      const addedLibro = await response.json();
-      setLibros([...libros, addedLibro]);
+      fetchLibros(); // Actualizar la lista de libros después de agregar uno nuevo
       setShowModal(false);
       setNewLibro({
         Titulo: '',
@@ -172,12 +169,12 @@ const AdminLibros = () => {
           Agregar Nuevo Libro
         </button>
         {libros.map((libro, index) => {
-          const isExpanded = expandedLibro === libro.id;
-          const isEditable = editableLibro === libro.id;
+          const isExpanded = expandedLibro === libro._id;
+          const isEditable = editableLibro === libro._id;
           const collapseId = `collapse${index + 1}`;
 
           return (
-            <div key={libro.id} className="card mb-3">
+            <div key={libro._id} className="card mb-3">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5 className="card-title">{libro.Titulo}</h5>
@@ -187,7 +184,7 @@ const AdminLibros = () => {
                 <div className="d-flex align-items-center">
                   <button
                     className="btn btn-primary me-2"
-                    onClick={() => toggleAccordion(libro.id)}
+                    onClick={() => toggleAccordion(libro._id)}
                     aria-expanded={isExpanded}
                     aria-controls={collapseId}
                   >
@@ -195,7 +192,7 @@ const AdminLibros = () => {
                   </button>
                   <button
                     className="btn btn-danger"
-                    onClick={() => handleDelete(libro.id)}
+                    onClick={() => handleDelete(libro._id)}
                   >
                     Eliminar
                   </button>
@@ -210,7 +207,7 @@ const AdminLibros = () => {
                         type="text"
                         className="form-control"
                         value={libro.Titulo}
-                        onChange={(e) => handleChange(e, libro.id, 'Titulo')}
+                        onChange={(e) => handleChange(e, libro._id, 'Titulo')}
                       />
                     </div>
                     <div className="mb-3">
@@ -219,7 +216,7 @@ const AdminLibros = () => {
                         type="text"
                         className="form-control"
                         value={libro.autor}
-                        onChange={(e) => handleChange(e, libro.id, 'autor')}
+                        onChange={(e) => handleChange(e, libro._id, 'autor')}
                       />
                     </div>
                     <div className="mb-3">
@@ -227,7 +224,7 @@ const AdminLibros = () => {
                       <textarea
                         className="form-control"
                         value={libro.descripcion}
-                        onChange={(e) => handleChange(e, libro.id, 'descripcion')}
+                        onChange={(e) => handleChange(e, libro._id, 'descripcion')}
                       />
                     </div>
                     <div className="mb-3">
@@ -236,7 +233,7 @@ const AdminLibros = () => {
                         type="text"
                         className="form-control"
                         value={libro.genero}
-                        onChange={(e) => handleChange(e, libro.id, 'genero')}
+                        onChange={(e) => handleChange(e, libro._id, 'genero')}
                       />
                     </div>
                     <div className="mb-3">
@@ -244,19 +241,19 @@ const AdminLibros = () => {
                       <input
                         type="date"
                         className="form-control"
-                        value={libro.fecha_publicacion}
-                        onChange={(e) => handleChange(e, libro.id, 'fecha_publicacion')}
+                        value={libro.fecha_publicacion.split('T')[0]}
+                        onChange={(e) => handleChange(e, libro._id, 'fecha_publicacion')}
                       />
                     </div>
                     <div className="mb-3 form-check">
                       <input
                         type="checkbox"
                         className="form-check-input"
-                        id={`disponibilidadCheckbox_${libro.id}`}
+                        id={`disponibilidadCheckbox_${libro._id}`}
                         checked={libro.disponibilidad}
-                        onChange={(e) => handleChange(e, libro.id, 'disponibilidad')}
+                        onChange={(e) => handleChange(e, libro._id, 'disponibilidad')}
                       />
-                      <label className="form-check-label" htmlFor={`disponibilidadCheckbox_${libro.id}`}>
+                      <label className="form-check-label" htmlFor={`disponibilidadCheckbox_${libro._id}`}>
                         Disponibilidad
                       </label>
                     </div>
@@ -266,27 +263,27 @@ const AdminLibros = () => {
                         type="number"
                         className="form-control"
                         value={libro.cantidad_stock}
-                        onChange={(e) => handleChange(e, libro.id, 'cantidad_stock')}
+                        onChange={(e) => handleChange(e, libro._id, 'cantidad_stock')}
                       />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Puntuación promedio</label>
                       <input
                         type="number"
-                        step="0.1"
                         className="form-control"
                         value={libro.puntuacion_promedio}
-                        onChange={(e) => handleChange(e, libro.id, 'puntuacion_promedio')}
+                        onChange={(e) => handleChange(e, libro._id, 'puntuacion_promedio')}
+                        step="0.1"
                       />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Precio</label>
                       <input
                         type="number"
-                        step="0.01"
                         className="form-control"
                         value={libro.precio}
-                        onChange={(e) => handleChange(e, libro.id, 'precio')}
+                        onChange={(e) => handleChange(e, libro._id, 'precio')}
+                        step="0.01"
                       />
                     </div>
                     <div className="mb-3">
@@ -294,155 +291,172 @@ const AdminLibros = () => {
                       <input
                         type="file"
                         className="form-control"
-                        onChange={(e) => handleFileChange(e, libro.id)}
+                        onChange={(e) => handleFileChange(e, libro._id)}
                       />
+                      {libro.imagen_url && (
+                        <img
+                          src={libro.imagen_url}
+                          alt="Portada del libro"
+                          style={{ width: '100px', marginTop: '10px' }}
+                        />
+                      )}
                     </div>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => handleSave(libro.id)}
-                    >
+                    <button className="btn btn-primary" onClick={() => handleSave(libro._id)}>
                       Guardar
+                    </button>
+                    <button className="btn btn-secondary ms-2" onClick={() => handleToggleEdit(libro._id)}>
+                      Cancelar
                     </button>
                   </div>
                 ) : (
                   <div className="card-body">
-                    <p><strong>Descripción:</strong> {libro.descripcion}</p>
-                    <p><strong>Género:</strong> {libro.genero}</p>
-                    <p><strong>Fecha de publicación:</strong> {libro.fecha_publicacion}</p>
-                    <p><strong>Disponibilidad:</strong> {libro.disponibilidad ? 'Sí' : 'No'}</p>
-                    <p><strong>Stock:</strong> {libro.cantidad_stock}</p>
-                    <p><strong>Puntuación promedio:</strong> {libro.puntuacion_promedio}</p>
-                    <p><strong>Precio:</strong> ${libro.precio}</p>
-                    <p><strong>Imagen:</strong> <img src={libro.imagen_url} alt="Imagen del libro" style={{ width: '100px' }} /></p>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => handleToggleEdit(libro.id)}
-                    >
+                    <p>Descripción: {libro.descripcion}</p>
+                    <p>Género: {libro.genero}</p>
+                    <p>Fecha de publicación: {new Date(libro.fecha_publicacion).toLocaleDateString()}</p>
+                    <p>Disponibilidad: {libro.disponibilidad ? 'Disponible' : 'No disponible'}</p>
+                    <p>Cantidad en stock: {libro.cantidad_stock}</p>
+                    <p>Puntuación promedio: {libro.puntuacion_promedio}</p>
+                    <p>Precio: ${libro.precio}</p>
+                    {libro.imagen_url && (
+                      <img
+                        src={libro.imagen_url}
+                        alt="Portada del libro"
+                        style={{ width: '100px', marginTop: '10px' }}
+                      />
+                    )}
+                    <button className="btn btn-primary mt-2" onClick={() => handleToggleEdit(libro._id)}>
                       Editar
                     </button>
                   </div>
                 )}
               </div>
             </div>
-        );
-      })}
+          );
+        })}
 
-      {showModal && (
-        <div className="modal d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Agregar Nuevo Libro</h5>
-                <button type="button" className="close" onClick={() => setShowModal(false)} aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Titulo</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={newLibro.Titulo}
-                    onChange={(e) => handleChangeNewLibro(e, 'Titulo')}
-                  />
+        {showModal && (
+          <div className="modal show d-block" tabIndex="-1">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Agregar Nuevo Libro</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Autor</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={newLibro.autor}
-                    onChange={(e) => handleChangeNewLibro(e, 'autor')}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Descripción</label>
-                  <textarea
-                    className="form-control"
-                    value={newLibro.descripcion}
-                    onChange={(e) => handleChangeNewLibro(e, 'descripcion')}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Género</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={newLibro.genero}
-                    onChange={(e) => handleChangeNewLibro(e, 'genero')}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Fecha de publicación</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={newLibro.fecha_publicacion}
-                    onChange={(e) => handleChangeNewLibro(e, 'fecha_publicacion')}
-                  />
-                </div>
-                <div className="mb-3 form-check">
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Titulo</label>
                     <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="disponibilidadCheckbox"
-                        checked={newLibro.disponibilidad}
-                        onChange={(e) => handleChangeNewLibro(e, 'disponibilidad')}
+                      type="text"
+                      className="form-control"
+                      value={newLibro.Titulo}
+                      onChange={(e) => handleChangeNewLibro(e, 'Titulo')}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Autor</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newLibro.autor}
+                      onChange={(e) => handleChangeNewLibro(e, 'autor')}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Descripción</label>
+                    <textarea
+                      className="form-control"
+                      value={newLibro.descripcion}
+                      onChange={(e) => handleChangeNewLibro(e, 'descripcion')}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Género</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newLibro.genero}
+                      onChange={(e) => handleChangeNewLibro(e, 'genero')}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Fecha de publicación</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={newLibro.fecha_publicacion}
+                      onChange={(e) => handleChangeNewLibro(e, 'fecha_publicacion')}
+                    />
+                  </div>
+                  <div className="mb-3 form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="disponibilidadCheckbox"
+                      checked={newLibro.disponibilidad}
+                      onChange={(e) => handleChangeNewLibro(e, 'disponibilidad')}
                     />
                     <label className="form-check-label" htmlFor="disponibilidadCheckbox">
-                        Disponibilidad
+                      Disponibilidad
                     </label>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Cantidad en stock</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={newLibro.cantidad_stock}
+                      onChange={(e) => handleChangeNewLibro(e, 'cantidad_stock')}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Puntuación promedio</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={newLibro.puntuacion_promedio}
+                      onChange={(e) => handleChangeNewLibro(e, 'puntuacion_promedio')}
+                      step="0.1"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Precio</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={newLibro.precio}
+                      onChange={(e) => handleChangeNewLibro(e, 'precio')}
+                      step="0.01"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Imagen</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      onChange={handleFileChangeNewLibro}
+                    />
+                    {newLibro.imagen_url && (
+                      <img
+                        src={newLibro.imagen_url}
+                        alt="Portada del libro"
+                        style={{ width: '100px', marginTop: '10px' }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Cantidad en stock</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={newLibro.cantidad_stock}
-                    onChange={(e) => handleChangeNewLibro(e, 'cantidad_stock')}
-                  />
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                    Cancelar
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={handleAddNewLibro}>
+                    Guardar
+                  </button>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Puntuación promedio</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="form-control"
-                    value={newLibro.puntuacion_promedio}
-                    onChange={(e) => handleChangeNewLibro(e, 'puntuacion_promedio')}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Precio</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="form-control"
-                    value={newLibro.precio}
-                    onChange={(e) => handleChangeNewLibro(e, 'precio')}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Imagen</label>
-                  <input
-                    type="file"
-                    className="form-control"
-                    onChange={handleFileChangeNewLibro}
-                  />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                <button type="button" className="btn btn-primary" onClick={handleAddNewLibro}>Guardar</button>
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {showModal && <div className="modal-backdrop fade show"></div>}
-    </div>
+        )}
+      </div>
     </div>
   );
 };
