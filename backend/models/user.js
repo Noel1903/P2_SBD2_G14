@@ -36,6 +36,9 @@ const UserSchema = Schema({
         required: true,
         default: 1
     },
+    age: {
+        type: Number,
+    },
     status: {
         type: Boolean,
         default: true,

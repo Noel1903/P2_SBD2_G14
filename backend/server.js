@@ -12,7 +12,8 @@ class Server {
         this.paths = {
             author: '/api/author',
             user: '/api/user',
-            cart: '/api/cart'
+            cart: '/api/cart',
+            auth: '/api/auth',
         }
 
         // Middlewares
@@ -35,6 +36,7 @@ class Server {
         this.app.use(this.paths.author, author);
         this.app.use(this.paths.user, require('./routes/user'));
         this.app.use(this.paths.cart, require('./routes/cart'));
+        this.app.use(this.paths.auth, require('./routes/auth'));
     }
 
     listen() {
