@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import NavBar from './MyNavBar';
 import imagen from '../img/user_signup.png';
 import '../styles/Login.css';
-import md5 from 'md5';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -16,28 +15,37 @@ const Login = () => {
             return;
         }
 
-        const hashedPassword = md5(password);
-        const formData = new FormData();
-        formData.append('nombre_usuario', username);
-        formData.append('contrasena', hashedPassword);
+        const data = {
+            email: username,
+            password: password
+        };
 
         try {
-            const response = await fetch('http://localhost:5000/signup/login', {
+            const response = await fetch('http://localhost:5000/api/auth', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             });
 
-            if (response.status === 200) {
+            const responseData = await response.json();
+        
+            if (responseData.ok === true) {
                 // Redirigir a la página de inicio
+                const { uid, role } = responseData.userLogin;
+                console.log(responseData);
                 alert("Bienvenido");
-                const data = await response.json();
-                const token = data.token;
-                console.log(token);
-                localStorage.setItem('token', token);
-                window.location.href = `/userpage`;
+                localStorage.setItem('uid', uid); // Guardar el uid en el localStorage
+                localStorage.setItem('role', role); // Guardar el role en el localStorage
+                if (role === 1){
+                    window.location.href = `/userpage`;
+                }else{
+                    window.location.href = `/adminpage`;
+                }                
             } else {
                 // Recargar la página
-                alert("Lo siento, ingreso mal  usuario o contraseña.");
+                alert("Error en el login: " + responseData.message);
                 window.location.reload();
             }
         } catch (error) {
