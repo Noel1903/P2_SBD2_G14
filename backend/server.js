@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const author = require('./routes/author');
+const book = require('./models/book');
 
 
 class Server {
@@ -14,7 +15,9 @@ class Server {
             user: '/api/user',
             cart: '/api/cart',
             auth: '/api/auth',
-            purchases: '/api/purchases'
+            purchases: '/api/purchases',
+            books: '/api/books',
+            reviews: '/api/reviews'
         }
 
         // Middlewares
@@ -39,6 +42,8 @@ class Server {
         this.app.use(this.paths.cart, require('./routes/cart'));
         this.app.use(this.paths.auth, require('./routes/auth'));
         this.app.use(this.paths.purchases, require('./routes/purchases'));
+        this.app.use(this.paths.books, require('./routes/book'));
+        this.app.use(this.paths.reviews, require('./routes/review'));
     }
 
     listen() {

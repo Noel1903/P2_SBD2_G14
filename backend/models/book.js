@@ -5,39 +5,39 @@ const bookSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    Autor: {
+    autor: {
         type: String,
         required: true
     },
-    Descripcion: {
+    descripcion: {
         type: String,
         required: true,
     },
-    Genero: {
+    genero: {
         type: String,
         required: true
     },
-    Fecha_publicacion: {
+    fecha_publicacion: {
         type: Date,
         required: true
     },
-    Disponibilidad: {
+    disponibilidad: {
         type: Boolean,
         required: true
     },
-    Cantidad_stock: {
+    cantidad_stock: {
         type: Number,
         required: true
     },
-    Puntuacion_promedio: {
+    puntuacion_promedio: {
         type: Number,
         required: true
     },
-    Precio: {
+    precio: {
         type: Number,
         required: true
     },
-    Imagen_url: {
+    imagen_url: {
         type: String,
         required: true
     }
