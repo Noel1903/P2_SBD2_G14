@@ -11,7 +11,8 @@ class Server {
         this.port = process.env.PORT || 5000;
 
         this.paths = {
-            author: '/api/author'
+            author: '/api/author',
+            cart : '/api/cart'
         }
 
         // Middlewares
@@ -33,6 +34,7 @@ class Server {
     routes() {
         //this.app.use(this.paths.author, require('./routes/author'));
         this.app.use(this.paths.author,author);
+        this.app.use(this.paths.cart, require('./routes/cart'));
         
     }
 
