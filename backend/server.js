@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const author = require('./routes/author');
-require('dotenv').config();
 
 
 class Server {
@@ -11,7 +10,8 @@ class Server {
         this.port = process.env.PORT || 5000;
 
         this.paths = {
-            author: '/api/author'
+            author: '/api/author',
+            user: '/api/user',
         }
 
         // Middlewares
@@ -31,20 +31,20 @@ class Server {
     }
 
     routes() {
-        //this.app.use(this.paths.author, require('./routes/author'));
-        this.app.use(this.paths.author,author);
-        
+        this.app.use(this.paths.author, author);
+        this.app.use(this.paths.user, require('./routes/user'));
+
     }
 
     listen() {
         mongoose
-        .connect(process.env.MONGO_URI)
-        .then(() => {
-            console.log('Conectado a la base de datos MongoDBAtlas');
-        })
-        .catch((err) => {
-            console.log('Error al conectarse a la base de datos', err);
-        });
+            .connect(process.env.MONGO_URI)
+            .then(() => {
+                console.log('Conectado a la base de datos MongoDBAtlas');
+            })
+            .catch((err) => {
+                console.log('Error al conectarse a la base de datos', err);
+            });
         this.app.listen(this.port, () => {
             console.log('Servidor corriendo en puerto', this.port);
         });

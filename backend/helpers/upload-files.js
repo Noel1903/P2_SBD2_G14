@@ -15,7 +15,7 @@ const uploadImage = (img64, esPerfil) => {
 
     return new Promise((resolve, reject) => {
         const nombreImagen = uuidv4();
-        const urlImagen = (esPerfil ? `Fotos_Perfil/${nombreImagen}.jpg` : `Libros/${nombreImagen}.jpg`)
+        const urlImagen = (esPerfil ? `Perfil/${nombreImagen}.jpg` : `Libros/${nombreImagen}.jpg`)
         const bufferImagen = Buffer.from(img64, 'base64');
 
         const parametros = {
@@ -27,10 +27,10 @@ const uploadImage = (img64, esPerfil) => {
 
         s3.upload(parametros, (error, data = aws.S3.ManagedUpload.SendData) => {
             if (error) {
-                reject({ msg: 'error', error });
+                reject({ ok: false, error });
             }
 
-            resolve({ msg: 'ok', data });
+            resolve({ ok: true, data });
         });
     });
 }
