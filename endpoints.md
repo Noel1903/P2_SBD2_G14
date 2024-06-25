@@ -15,7 +15,7 @@ POST http://localhost:5000/api/author
 {
     "name": "",
     "biography": "",
-    "photoProfile": "",
+    "photoProfile": imgbase64,
     "booksList": [Objects]
 
 }
@@ -253,4 +253,168 @@ PUT http://localhost:5000/api/user/profile
 ```
 
 ---------------------------------------------------------------------------------
+#### Enviar datos al carrito
 
+POST http://localhost:5000/api/cart
+#### Body request
+```json
+{
+    "userId": "6679c33afa5d6c30225fa1e2",
+    "name": "Libro 1",
+    "price": 100,
+    "quantity": 1
+}
+```
+#### Response
+```json
+{
+  "message": "Libro añadido al carrito correctamente"
+}
+```
+#### Response Error
+```json
+{
+  "message": "Error  al añadir al carrito"
+}
+```
+----------------------------------------------------------
+#### Obtener datos del carrito
+GET http://localhost:5000/api/cart/:id
+
+```json
+{
+  "cart": [
+    {
+      "_id": "667ae6a1d8e1ded5d82b71d3",
+      "userId": "6679c33afa5d6c30225fa1e2",
+      "name": "Libro 1",
+      "price": 100,
+      "quantity": 1,
+      "__v": 0
+    },
+    {
+      "_id": "667ae787d8e1ded5d82b71d6",
+      "userId": "6679c33afa5d6c30225fa1e2",
+      "name": "Libro 3",
+      "price": 60,
+      "quantity": 1,
+      "__v": 0
+    }
+  ],
+  "totalQuantity": 2,
+  "totalPrice": 160
+}
+```
+-------------------------------------------------------
+#### Eliminar un dato del carrito
+DELETE http://localhost:5000/api/cart/:id_carrito
+#### Response
+```json
+{
+    "message": "Libro eliminado correctamente"
+}
+```
+
+#### Response Error
+```json
+{
+    "message": "Libro no encontrado"
+}
+```
+---------------------------------------------------------------------------------------
+
+
+#### Agregar pedido o compra
+POST http://localhost:5000/api/purchase
+#### Body request
+```json
+{
+  "userId" : "6679c33afa5d6c30225fa1e2",
+  "cart": [
+    {
+      "_id": "667ae6a1d8e1ded5d82b71d3",
+      "userId": "6679c33afa5d6c30225fa1e2",
+      "name": "Libro 1",
+      "price": 100,
+      "quantity": 1,
+      "__v": 0
+    },
+    {
+      "_id": "667ae787d8e1ded5d82b71d6",
+      "userId": "6679c33afa5d6c30225fa1e2",
+      "name": "Libro 3",
+      "price": 60,
+      "quantity": 1,
+      "__v": 0
+    }
+  ],
+  "totalQuantity": 2,
+  "totalPrice": 160,
+  "address":"12 av 23-85 Z10, Guatemala",
+  "payment":"Efectivo",
+  "status" : 0
+}
+```
+#### Para este 0 = en proceso , 1 = Enviado , 2 = Entregado
+--------------------------------------------------------------------------------------------------
+#### Obtener todos los pedidos o compras
+GET http://localhost:5000/api/purchase
+```json
+{
+  "purchases": [
+    {
+      "_id": "667aecc32fb185e93f8a07ec",
+      "userId": "6679c33afa5d6c30225fa1e2",
+      "cart": [
+        {
+          "_id": "667ae6a1d8e1ded5d82b71d3",
+          "userId": "6679c33afa5d6c30225fa1e2",
+          "name": "Libro 1",
+          "price": 100,
+          "quantity": 1,
+          "__v": 0
+        },
+        {
+          "_id": "667ae787d8e1ded5d82b71d6",
+          "userId": "6679c33afa5d6c30225fa1e2",
+          "name": "Libro 3",
+          "price": 60,
+          "quantity": 1,
+          "__v": 0
+        }
+      ],
+      "totalQuantity": 2,
+      "totalPrice": 160,
+      "address": "12 av 23-85 Z10, Guatemala",
+      "payment": "Efectivo",
+      "status": 0,
+      "__v": 0
+    }
+  ]
+}
+```
+-------------------------------------------------------------------------------------
+#### Actualizar estado de compra
+PUT http://localhost:5000/api/purchases
+#### Body request
+```json
+{
+  "id": "667aecc32fb185e93f8a07ec",
+  "status": 1
+}
+```
+#### Response
+```json
+{
+  "message": "Compra actualizada correctamente"
+}
+```
+
+#### Response Error
+```json
+{
+  "message": "No existe la compra"
+}
+```
+
+----------------------------------------------------------------

@@ -1,10 +1,45 @@
 const { response } = require('express');
 const Author = require('../models/author');
-
+const { uploadImage } = require('../helpers/upload-files');
 
 const createAuthor = async(req, res = response) => {
-    const author = Author(req.body);
+    const { name, biography, photoProfile, booksList} = req.body;
+    
+    Author(req.body);
     try {
+
+        let urlImage = '';
+        const authorExists = await Author.findOne({ name });
+        
+        if (authorExists) {
+            return res.status(404).json({
+                message: `Ya existe un autor con el nombre ${name}`,
+                ok: false
+            });
+        }
+
+
+        if (photoProfile && photoProfile != '') {
+            const uploadImg = await uploadImage(photoProfile, true);
+
+            if (!uploadImg.ok) {
+                return res.status(404).json({
+                    message: `Error al subir foto usuario ${ uploadImage.error }`,
+                    ok: false
+                });
+            }
+
+            urlImage = uploadImg.data.Location;
+        }
+
+        const author = new Author({
+            name,
+            biography,
+            photoProfile: urlImage,
+            booksList
+        });
+
+
         await author.save();
         res.json({
             ok: true,

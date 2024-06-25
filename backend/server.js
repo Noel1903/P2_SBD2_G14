@@ -14,6 +14,7 @@ class Server {
             user: '/api/user',
             cart: '/api/cart',
             auth: '/api/auth',
+            purchases: '/api/purchases'
         }
 
         // Middlewares
@@ -37,6 +38,7 @@ class Server {
         this.app.use(this.paths.user, require('./routes/user'));
         this.app.use(this.paths.cart, require('./routes/cart'));
         this.app.use(this.paths.auth, require('./routes/auth'));
+        this.app.use(this.paths.purchases, require('./routes/purchases'));
     }
 
     listen() {
