@@ -71,3 +71,37 @@ Respuesta Incorrecta:
     "message": "Autor no encontrado"
 }
 -------------------------------------------------------------------------------------
+
+###Registro de Usuarios
+POST http://localhost:5000/api/user
+{
+    "name": "",
+    "lastname": "",
+    "email": "",
+    "password": "",
+    "address": "",
+    "imgProfile": imgbase64,
+}
+Respuesta Correcta:
+{
+    "message": "Usuario creado exitosamente",
+    "ok": true
+}
+
+Respuestas Incorrectas:
+{
+    "message": "Ya existe un usuario con el email",
+    "ok": false
+}
+
+{
+    "message": "Error al subir foto usuario",
+    "ok": false
+}
+
+{
+    "message": "Error al crear usuario",
+    "ok": false
+}
+---------------------------------------------------------------------------------
+
