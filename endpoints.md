@@ -99,6 +99,133 @@ DELETE http://localhost:5000/api/author/id
 ```
 -------------------------------------------------------------------------------------
 
+### Agregar un libro
+```
+POST http://localhost:5000/api/books
+```
+#### Body request
+
+```json
+{
+    "Titulo": " ",
+    "autor": " ",
+    "descripcion": " ",
+    "genero": " ",
+    "fecha_publicacion": " ",
+    "disponibilidad": false,
+    "cantidad_stock": 0,
+    "puntuacion_promedio": 0,
+    "precio": 0.0,
+    "imagen_url": imgbase64
+}
+```
+#### Response
+
+```json
+{
+    "ok": true,
+    "message":"Libro creado correctamente"
+}
+```
+#### Response Error
+
+```json
+{
+    "ok": false,
+    "message":"Error  al crear el libro"
+}
+```
+```json
+{
+    "ok": false,
+    "message":"Ya existe un libro con el titulo "
+}
+```
+```json
+{
+    "ok": false,
+    "message": "Error al subir foto libro "
+}
+```
+
+### Obtener todos los libros
+```
+GET http://localhost:5000/api/books
+```
+#### Response
+
+```json
+{
+  "books": [
+    {
+      "_id": "667b42ca94159d93b4179341",
+      "Titulo": "Pensar Bien, Sentirse Bien",
+      "autor": "Walter Riso",
+      "descripcion": "Motivación mental",
+      "genero": "Psicologia",
+      "fecha_publicacion": "2024-06-04T00:00:00.000Z",
+      "disponibilidad": true,
+      "cantidad_stock": 6,
+      "puntuacion_promedio": 90,
+      "precio": 320,
+      "imagen_url": "https://bd2-p2-g14-imagenes.s3.amazonaws.com/Perfil/ed023b44-eade-47d2-a1ea-27ad72626852.jpg",
+      "__v": 0
+    },...
+  ]
+}
+```
+
+### Obtener libro por id
+```
+GET http://localhost:5000/api/books/idBook
+```
+#### Response
+
+```json
+{
+    "_id": "667b433994159d93b4179346",
+    "Titulo": "Blanca Olmeda",
+    "autor": "Lucila Gamero de Medina",
+    "descripcion": "Novela",
+    "genero": "Romance-Tragedia",
+    "fecha_publicacion": "2024-06-03T00:00:00.000Z",
+    "disponibilidad": true,
+    "cantidad_stock": 19,
+    "puntuacion_promedio": 92,
+    "precio": 350,
+    "imagen_url": "https://bd2-p2-g14-imagenes.s3.amazonaws.com/Perfil/ca071d9a-a285-451c-8090-2c8e59ae279a.jpg",
+    "__v": 0
+}
+```
+
+### Modificar libro por id
+```
+PUT http://localhost:5000/api/books/idBook
+```
+
+```json
+{
+  "id": "1kjhk21323kjh123",
+  "Titulo": "panda2",
+  "autor": "Autor del Libro",
+  "descripcion": "descripcion del Libro",
+  "genero": "genero del Libro",
+  "fecha_publicacion": "2020-01-01",
+  "disponibilidad": true,
+  "cantidad_stock": 10,
+  "puntuacion_promedio": 4.5,
+  "precio": 20,
+  "imagen_url": "https://images.creativefabrica.com/products/previews/2023/10/28/zhrUKHj1Z/2XNe1i5NQ9la6jcMRJZbqSHpycm-desktop.jpg"
+}
+```
+
+### Eliminar libro por id
+```
+DELETE http://localhost:5000/api/books/idBook
+```
+
+----------------------------------------------------------------------------------
+
 ### Registro de Usuarios
 ```
 POST http://localhost:5000/api/user
@@ -354,39 +481,54 @@ En el array cart van los id de los items del carrito
 GET http://localhost:5000/api/purchases
 ```json
 {
-  "purchases": [
+  "ListPurchases": [
     {
-      "_id": "667aecc32fb185e93f8a07ec",
-      "userId": "6679c33afa5d6c30225fa1e2",
+      "id": "667b8edbbeb288438b9f25e0",
+      "userId": "667a5b2c5f6063f208ef3d9b",
       "cart": [
         {
-          "_id": "667ae6a1d8e1ded5d82b71d3",
-          "userId": "6679c33afa5d6c30225fa1e2",
-          "name": "Libro 1",
-          "price": 100,
-          "quantity": 1,
-          "__v": 0
-        },
-        {
-          "_id": "667ae787d8e1ded5d82b71d6",
-          "userId": "6679c33afa5d6c30225fa1e2",
-          "name": "Libro 3",
-          "price": 60,
-          "quantity": 1,
-          "__v": 0
-        }
+          "idBook": "667b45cb94159d93b417935b",
+          "book": "Libro Edit Imagen"
+        },...
       ],
-      "totalQuantity": 2,
-      "totalPrice": 160,
+      "totalQuantity": 5,
+      "totalPrice": 1076.02,
       "address": "12 av 23-85 Z10, Guatemala",
       "payment": "Efectivo",
-      "status": 0,
-      "__v": 0
-    }
+      "status": 0
+    },...
   ]
 }
 ```
 -------------------------------------------------------------------------------------
+#### Obtener todos los pedidos o compras por Usuario
+```
+GET http://localhost:5000/api/purchases/idUser
+```
+
+```json
+{
+  "ListPurchases": [
+    {
+      "id": "667b8edbbeb288438b9f25e0",
+      "userId": "667a5b2c5f6063f208ef3d9b",
+      "cart": [
+        {
+          "idBook": "667b45cb94159d93b417935b",
+          "book": "Libro Edit Imagen"
+        },...
+      ],
+      "totalQuantity": 5,
+      "totalPrice": 1076.02,
+      "address": "12 av 23-85 Z10, Guatemala",
+      "payment": "Efectivo",
+      "status": 0
+    },...
+  ]
+}
+```
+
+----------------------------------------------------------------------------------------------
 #### Actualizar estado de compra
 PUT http://localhost:5000/api/purchases
 #### Body request

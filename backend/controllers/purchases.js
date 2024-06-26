@@ -4,6 +4,7 @@ const Cart = require('../models/cart');
 const Book = require('../models/book');
 const StatisticPurchase = require('../models/statisticPurchase');
 
+
 const addPurchase = async(req, res = response) => {
     const purchase = Purchase(req.body);
 
@@ -71,9 +72,47 @@ const addPurchase = async(req, res = response) => {
 const getPurchases = async(req, res = response) => {
     try {
         const purchases = await Purchase.find();
+        const purchasesList = [];
+        const ListPurchases = [];
+        for (const purchase of purchases) {
+            for (const itemCart of purchase.cart) {
+                const cartItem = await Cart.findById(itemCart); // Obtener el detalle del carrito
+
+                if (!cartItem) {
+                    console.log(`No se encontró el carrito con ID: ${itemCart}`);
+                    continue;
+                }
+
+                const book = await Book.findById(cartItem.book); // Obtener el libro asociado al carrito
+
+                if (!book) {
+                    console.log(`No se encontró el libro con ID: ${cartItem.book}`);
+                    continue;
+                }
+
+                purchasesList.push({
+                    idBook: book._id,
+                    book: book.Titulo
+                });
+            }
+            const Purchases = {
+                id: purchase._id,
+                userId: purchase.userId,
+                cart: purchasesList,
+                totalQuantity: purchase.totalQuantity,
+                totalPrice: purchase.totalPrice,
+                address: purchase.address,
+                payment: purchase.payment,
+                status: purchase.status
+            };
+            ListPurchases.push(Purchases);
+        }
+
+        
         res.json({
-            purchases
+            ListPurchases
         });
+        
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -87,9 +126,49 @@ const getPurchasesByUser = async(req, res = response) => {
 
     try {
         const purchases = await Purchase.find({ userId });
+        const purchasesList = [];
+        const ListPurchases = [];
+        for (const purchase of purchases) {
+            for (const itemCart of purchase.cart) {
+                const cartItem = await Cart.findById(itemCart); // Obtener el detalle del carrito
+
+                if (!cartItem) {
+                    console.log(`No se encontró el carrito con ID: ${itemCart}`);
+                    continue;
+                }
+
+                const book = await Book.findById(cartItem.book); // Obtener el libro asociado al carrito
+
+                if (!book) {
+                    console.log(`No se encontró el libro con ID: ${cartItem.book}`);
+                    continue;
+                }
+
+                purchasesList.push({
+                    idBook: book._id,
+                    book: book.Titulo
+                });
+            }
+            const Purchases = {
+                id: purchase._id,
+                userId: purchase.userId,
+                cart: purchasesList,
+                totalQuantity: purchase.totalQuantity,
+                totalPrice: purchase.totalPrice,
+                address: purchase.address,
+                payment: purchase.payment,
+                status: purchase.status
+            };
+            ListPurchases.push(Purchases);
+        }
+
+        
         res.json({
-            purchases
+            ListPurchases
         });
+
+
+
     } catch (error) {
         console.log(error);
         res.status(500).json({
