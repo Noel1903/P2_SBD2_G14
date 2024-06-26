@@ -142,7 +142,7 @@ const UserPage = ({ userData }) => {
                                 <label className='labelsignup'>Contraseña</label>
                             </div>
                             <div className='mb-3'>
-                                <input className='inputsignup' type="password" name="Contrasenia" placeholder="Ingrese su contraseña para confirmar" value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
+                                <input className='inputsignup' type="password" name="Contrasenia" placeholder="Ingrese su contraseña para confirmar" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                             </div>
                             <div className='mb-3'>
                                 <button type="submit" className="butonsignup">
