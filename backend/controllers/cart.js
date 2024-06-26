@@ -1,5 +1,6 @@
 const { response } = require('express');
 const Cart = require('../models/cart');
+const Book = require('../models/book');
 
 const addCart = async(req, res = response) => {
     const cart = Cart(req.body);
@@ -14,13 +15,13 @@ const addCart = async(req, res = response) => {
             message: 'Error  al añadir al carrito'
         });
     }
-    
+
 }
 
 const getCart = async(req, res = response) => {
-    const {userId} = req.params;
+    const { userId } = req.params;
     try {
-        const cart = await Cart.find({userId});
+        const cart = await Cart.find({ userId });
         if (!cart) {
             return res.status(404).json({
                 message: 'Carrito no encontrado'
@@ -28,19 +29,30 @@ const getCart = async(req, res = response) => {
         }
         let totalQuantity = 0;
         let totalPrice = 0;
-        cart.forEach((item) => {
-            totalQuantity += item.quantity;
-            totalPrice += item.price;
-        });
+        let arrayBooks = [];
 
-        res.json({
-            cart,
+        for (const item of cart) {
+            const bookCart = await Book.findById(item.book);
+            if (bookCart) {
+                let book = {
+                    idItem: item.id,
+                    nombre: bookCart.Titulo,
+                    price: bookCart.precio,
+                    quantity: item.quantity,
+                }
+                arrayBooks.push(book);
+            }
+            totalQuantity += item.quantity;
+            totalPrice += (bookCart.precio * item.quantity);
+        }
+
+        res.status(200).json({
+            userId,
+            cart: arrayBooks,
             totalQuantity,
             totalPrice
         });
-
-
-    } catch (error) {  
+    } catch (error) {
         console.log(error);
         res.status(500).json({
             message: 'Error al obtener el carrito'
@@ -49,26 +61,21 @@ const getCart = async(req, res = response) => {
 }
 
 const deleteCart = async(req, res = response) => {
-    const {idCart} = req.params;
+    const { idCart } = req.params;
     const cart = await Cart.findByIdAndDelete(idCart);
-    if(!cart){
+    if (!cart) {
         return res.status(404).json({
             message: 'Libro no encontrado'
         })
-    }
-    else{
+    } else {
         res.json({
             message: 'Libro eliminado correctamente'
         });
     }
 }
 
-
-
-
-
 module.exports = {
     addCart,
     getCart,
-    deleteCart
+    deleteCart,
 }

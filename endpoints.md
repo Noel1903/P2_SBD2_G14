@@ -259,10 +259,9 @@ POST http://localhost:5000/api/cart
 #### Body request
 ```json
 {
-    "userId": "6679c33afa5d6c30225fa1e2",
-    "name": "Libro 1",
-    "price": 100,
-    "quantity": 1
+    "userId": "667a5b2c5f6063f208ef3d9b",
+    "book": "667b449694159d93b4179354",
+    "quantity": 3
 }
 ```
 #### Response
@@ -274,35 +273,32 @@ POST http://localhost:5000/api/cart
 #### Response Error
 ```json
 {
-  "message": "Error  al añadir al carrito"
+  "message": "Error al añadir al carrito"
 }
 ```
 ----------------------------------------------------------
 #### Obtener datos del carrito
-GET http://localhost:5000/api/cart/:id
+GET http://localhost:5000/api/cart/:id(usuario)
 
 ```json
 {
-  "cart": [
-    {
-      "_id": "667ae6a1d8e1ded5d82b71d3",
-      "userId": "6679c33afa5d6c30225fa1e2",
-      "name": "Libro 1",
-      "price": 100,
-      "quantity": 1,
-      "__v": 0
-    },
-    {
-      "_id": "667ae787d8e1ded5d82b71d6",
-      "userId": "6679c33afa5d6c30225fa1e2",
-      "name": "Libro 3",
-      "price": 60,
-      "quantity": 1,
-      "__v": 0
-    }
-  ],
-  "totalQuantity": 2,
-  "totalPrice": 160
+    "userId": "667a5b2c5f6063f208ef3d9b",
+    "cart": [
+        {
+            "idItem": "667b7b2cca39e78654463661",
+            "nombre": "Blanca Olmeda",
+            "price": 350,
+            "quantity": 2
+        },
+        {
+            "idItem": "667b86fcc7e699b038588d0c",
+            "nombre": "El Cuervo",
+            "price": 125.34,
+            "quantity": 3
+        }
+    ],
+    "totalQuantity": 5,
+    "totalPrice": 1076.02
 }
 ```
 -------------------------------------------------------
