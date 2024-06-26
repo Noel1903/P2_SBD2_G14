@@ -82,6 +82,22 @@ const getPurchases = async(req, res = response) => {
     }
 }
 
+const getPurchasesByUser = async(req, res = response) => {
+    const { userId } = req.params;
+
+    try {
+        const purchases = await Purchase.find({ userId });
+        res.json({
+            purchases
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Error al obtener las compras'
+        });
+    }
+}
+
 
 const updatePurchase = async(req, res = response) => {
     const { id, status } = req.body;
@@ -113,5 +129,6 @@ const updatePurchase = async(req, res = response) => {
 module.exports = {
     addPurchase,
     getPurchases,
+    getPurchasesByUser,
     updatePurchase
 }

@@ -2,6 +2,30 @@ const { response } = require('express');
 const Book = require('../models/book');
 const { uploadImage } = require('../helpers/upload-files');
 
+
+
+function isBase64(str) {
+    // Verificar si la longitud es un múltiplo de 4
+    if (str.length % 4 !== 0) {
+        return false;
+    }
+
+    // Verificar si contiene solo caracteres válidos
+    const base64Regex = /^[A-Za-z0-9+/]+={0,2}$/;
+    if (!base64Regex.test(str)) {
+        return false;
+    }
+
+    // Intentar decodificar la cadena
+    try {
+        const decoded = Buffer.from(str, 'base64').toString('utf-8');
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+
 const createBook = async(req, res = response) => {
     const { Titulo, autor, descripcion, genero, fecha_publicacion, disponibilidad, cantidad_stock, puntuacion_promedio, precio, imagen_url} = req.body;
     
@@ -94,17 +118,22 @@ const updateBook = async(req, res = response) => {
                 ok: false
             });
         }
-        if (imagen_url && imagen_url != '') {
-            const uploadImg = await uploadImage(imagen_url, true);
 
-            if (!uploadImg.ok) {
-                return res.status(404).json({
-                    message: `Error al subir foto libro ${ uploadImage.error }`,
-                    ok: false
-                });
+        if (isBase64(imagen_url)) {
+            if (imagen_url && imagen_url != '') {
+                const uploadImg = await uploadImage(imagen_url, true);
+
+                if (!uploadImg.ok) {
+                    return res.status(404).json({
+                        message: `Error al subir foto libro ${ uploadImage.error }`,
+                        ok: false
+                    });
+                }
+
+                urlImage = uploadImg.data.Location;
             }
-
-            urlImage = uploadImg.data.Location;
+        }else{
+            urlImage = imagen_url;
         }
 
         const newBook = {
@@ -159,6 +188,10 @@ const deleteBook = async(req, res = response) => {
         });
     }
 }
+
+
+
+
 
 module.exports = {
     createBook,
