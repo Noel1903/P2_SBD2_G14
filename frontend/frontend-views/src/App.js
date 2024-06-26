@@ -5,6 +5,11 @@ import HomePage from '../src/general/components/HomePage';
 import SignupUser from '../src/general/components/Signup';
 import LoginUser from "../src/general/components/Login";
 import UserPage from "../src/UserData/components/UserPage";
+//user routes
+import UserAuthors from "../src/UserData/components/UserAuthors";
+import UserBooks from "../src/UserData/components/UserBooks";
+import UserCart from "../src/UserData/components/UserCart";
+import UserReview from './UserData/components/UserReview';
 //administrador
 import AdminPagePrincipal from "../src/AdminData/components/AdminPage";
 import Report from "../src/AdminData/components/Report";
@@ -72,7 +77,10 @@ function App() {
           <Route path='/historial' element={<PrivateRouteAdmin><Historial /></PrivateRouteAdmin>} />
           <Route path='/adminlibros' element={<PrivateRouteAdmin><AdminLibros /></PrivateRouteAdmin>} />
           <Route path='/adminautores' element={<PrivateRouteAdmin><AdminAutores /></PrivateRouteAdmin>} />
-
+          <Route path='/userauthors' element={<PrivateRoute><UserAuthors /></PrivateRoute>} />
+          <Route path='/userbooks' element={<PrivateRoute><UserBooks /></PrivateRoute>} />  
+          <Route path='/usercart' element={<PrivateRoute><UserCart /></PrivateRoute>} />
+          <Route path='/userreview' element={<PrivateRoute><UserReview /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
     </>
