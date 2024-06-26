@@ -21,7 +21,7 @@ const addCart = async(req, res = response) => {
 const getCart = async(req, res = response) => {
     const { userId } = req.params;
     try {
-        const cart = await Cart.find({ userId });
+        const cart = await Cart.find({ userId, status: true });
         if (!cart) {
             return res.status(404).json({
                 message: 'Carrito no encontrado'

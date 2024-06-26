@@ -321,40 +321,37 @@ DELETE http://localhost:5000/api/cart/:id_carrito
 
 
 #### Agregar pedido o compra
-POST http://localhost:5000/api/purchase
+POST http://localhost:5000/api/purchases
+
+En el array cart van los id de los items del carrito
+
 #### Body request
 ```json
 {
-  "userId" : "6679c33afa5d6c30225fa1e2",
-  "cart": [
-    {
-      "_id": "667ae6a1d8e1ded5d82b71d3",
-      "userId": "6679c33afa5d6c30225fa1e2",
-      "name": "Libro 1",
-      "price": 100,
-      "quantity": 1,
-      "__v": 0
-    },
-    {
-      "_id": "667ae787d8e1ded5d82b71d6",
-      "userId": "6679c33afa5d6c30225fa1e2",
-      "name": "Libro 3",
-      "price": 60,
-      "quantity": 1,
-      "__v": 0
-    }
-  ],
-  "totalQuantity": 2,
-  "totalPrice": 160,
-  "address":"12 av 23-85 Z10, Guatemala",
-  "payment":"Efectivo",
-  "status" : 0
+    "userId" : "667b52d32457ecb57eba311f",
+    "cart": [
+        "667b9832dc6877fe75e5aff9",
+        "667b985cdc6877fe75e5affd"
+    ],
+    "totalQuantity": 6,
+    "totalPrice": 1059,
+    "address":"San José Pinula, Guatemala",
+    "payment":"Efectivo",
+    "status" : 0
 }
 ```
+
+#### Response
+```json
+{
+    "message": "Compra realizada correctamente"
+}
+```
+
 #### Para este 0 = en proceso , 1 = Enviado , 2 = Entregado
 --------------------------------------------------------------------------------------------------
 #### Obtener todos los pedidos o compras
-GET http://localhost:5000/api/purchase
+GET http://localhost:5000/api/purchases
 ```json
 {
   "purchases": [
@@ -414,3 +411,40 @@ PUT http://localhost:5000/api/purchases
 ```
 
 ----------------------------------------------------------------
+
+### Get Top Libros
+```
+GET http://localhost:5000/api/report
+```
+
+El id que se devuelve NO es del libro, es del item de la colección statistics
+
+#### Response
+```json
+{
+    "reportBook": [
+        {
+            "bookName": "El Cuervo",
+            "quantity": 5,
+            "id": "667b951762d8c7d0e2667997"
+        },
+        {
+            "bookName": "Pensar Bien, Sentirse Bien",
+            "quantity": 4,
+            "id": "667b95e062d8c7d0e26679a7"
+        },
+        {
+            "bookName": "Libro Edit 4",
+            "quantity": 4,
+            "id": "667b98b3dc6877fe75e5b00d"
+        }
+    ]
+}
+```
+#### Response Error
+```json
+{
+    "message": "Error al obtener el top de libros",
+    "ok": false
+}
+```

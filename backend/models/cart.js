@@ -21,7 +21,11 @@ const cartSchema = Schema({
     quantity: {
         type: Number,
         required: true
-    }
+    },
+    status: {
+        type: Boolean,
+        default: true,
+    },
 }, { collection: 'carts' });
 
 

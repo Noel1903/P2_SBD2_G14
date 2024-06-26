@@ -17,7 +17,8 @@ class Server {
             auth: '/api/auth',
             purchases: '/api/purchases',
             books: '/api/books',
-            reviews: '/api/reviews'
+            reviews: '/api/reviews',
+            report: '/api/report',
         }
 
         // Middlewares
@@ -44,6 +45,7 @@ class Server {
         this.app.use(this.paths.purchases, require('./routes/purchases'));
         this.app.use(this.paths.books, require('./routes/book'));
         this.app.use(this.paths.reviews, require('./routes/review'));
+        this.app.use(this.paths.report, require('./routes/statisticPurchase'));
     }
 
     listen() {
