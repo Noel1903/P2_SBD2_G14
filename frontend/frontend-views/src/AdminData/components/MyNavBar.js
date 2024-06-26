@@ -7,7 +7,8 @@ const MyNavbar2 = () => {
 
   const handleLogout = () => {
     // Eliminar el admin del almacenamiento local al cerrar sesión
-    localStorage.removeItem('admin');
+    localStorage.removeItem('uid');
+    localStorage.removeItem('role');    
     // Redireccionar al usuario a la página de inicio de sesión
     window.location.href = "/";
   };
