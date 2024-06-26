@@ -7,7 +7,8 @@ const MyNavbar2 = () => {
 
   const handleLogout = () => {
     // Eliminar el token del almacenamiento local al cerrar sesión
-    localStorage.removeItem('token');
+    localStorage.removeItem('uid');
+    localStorage.removeItem('role');
     // Redireccionar al usuario a la página de inicio de sesión
     window.location.href = "/";
   };

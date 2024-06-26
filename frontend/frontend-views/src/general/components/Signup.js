@@ -16,14 +16,14 @@ const Signup = () => {
     const handleImagenChange = (event) => {
         const imagenSeleccionada = event.target.files[0];
         if (imagenSeleccionada) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagen(URL.createObjectURL(imagenSeleccionada));
-                setImagenBase64(reader.result); // Almacenar la cadena completa de Base64
-            };
-            reader.readAsDataURL(imagenSeleccionada);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagen(URL.createObjectURL(imagenSeleccionada));
+            setImagenBase64(reader.result.split(',')[1]); // Extraer solo la parte base64
+          };
+          reader.readAsDataURL(imagenSeleccionada);
         }
-    };
+      };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
