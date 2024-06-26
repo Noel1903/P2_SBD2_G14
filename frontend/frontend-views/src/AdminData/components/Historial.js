@@ -9,12 +9,12 @@ const Historial = () => {
   useEffect(() => {
     const fetchCompras = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/compras');
+        const response = await fetch('http://localhost:5000/api/purchases');
         if (!response.ok) {
           throw new Error('Error al obtener las compras');
         }
         const data = await response.json();
-        setCompras(data);
+        setCompras(data.purchases);
       } catch (error) {
         console.error('Error fetching compras', error);
       }
@@ -25,12 +25,12 @@ const Historial = () => {
 
   const handleChangeEstado = async (idCompra, nuevoEstado) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/compras/${idCompra}`, {
+      const response = await fetch(`http://localhost:5000/api/purchases`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ state: nuevoEstado })
+        body: JSON.stringify({ id: idCompra, status: nuevoEstado })
       });
 
       if (!response.ok) {
@@ -38,21 +38,15 @@ const Historial = () => {
       }
 
       // Actualizar el estado local después de la actualización exitosa
-      setCompras(prevCompras => 
-        prevCompras.map(compraObject => {
-          if (compraObject[idCompra]) {
-            return {
-              [idCompra]: {
-                ...compraObject[idCompra],
-                state: nuevoEstado
-              }
-            };
-          }
-          return compraObject;
-        })
-      );
+      const updatedCompras = compras.map(compra => {
+        if (compra._id === idCompra) {
+          return { ...compra, status: nuevoEstado };
+        }
+        return compra;
+      });
+      setCompras(updatedCompras);
 
-      console.log(`Estado de compra ${idCompra} actualizado a ${nuevoEstado}`);
+      //console.log(`Estado de compra ${idCompra} actualizado a ${nuevoEstado}`);
     } catch (error) {
       console.error('Error updating compra', error);
     }
@@ -67,30 +61,28 @@ const Historial = () => {
       <NavBar />
       <div className="container">
         <h2 className="my-4">Historial de Compras</h2>
-        {compras.map((compraObject, index) => {
-          const compraKey = Object.keys(compraObject)[0];
-          const { user, state, Libros } = compraObject[compraKey];
+        {compras.map((compra, index) => {
           const compraNumero = index + 1;
           const isExpanded = expandedCompra === compraNumero;
           const collapseId = `collapse${compraNumero}`;
 
           return (
-            <div key={index} className="card mb-3">
+            <div key={compra._id} className="card mb-3">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5 className="card-title">Compra {compraNumero}</h5>
-                  <p className="card-text">Usuario: {user}</p>
-                  <p className="card-text">Estado: {state}</p>
+                  <p className="card-text">Usuario: {compra.userId}</p>
+                  <p className="card-text">Estado: {compra.status}</p>
                 </div>
                 <div className="d-flex align-items-center">
                   <select
                     className="form-select me-3"
-                    value={state}
-                    onChange={(e) => handleChangeEstado(compraKey, e.target.value)}
+                    value={compra.status}
+                    onChange={(e) => handleChangeEstado(compra._id, e.target.value)}
                   >
-                    <option value="En Proceso">En Proceso</option>
-                    <option value="Enviado">Enviado</option>
-                    <option value="Entregado">Entregado</option>
+                    <option value={0}>En Proceso</option>
+                    <option value={1}>Enviado</option>
+                    <option value={2}>Entregado</option>
                   </select>
                   <button
                     className="btn btn-primary"
@@ -104,10 +96,18 @@ const Historial = () => {
               </div>
               <div id={collapseId} className={`collapse ${isExpanded ? 'show' : ''}`}>
                 <ul className="list-group list-group-flush">
-                  {Libros.map((libro, idx) => (
-                    <li key={idx} className="list-group-item">{libro}</li>
+                  {compra.cart.map((item, idx) => (
+                    <li key={item._id} className="list-group-item">
+                      {item.name} - Cantidad: {item.quantity}
+                    </li>
                   ))}
                 </ul>
+                <div className="card-body">
+                  <p>Total de productos: {compra.totalQuantity}</p>
+                  <p>Total a pagar: {compra.totalPrice}</p>
+                  <p>Dirección de envío: {compra.address}</p>
+                  <p>Método de pago: {compra.payment}</p>
+                </div>
               </div>
             </div>
           );

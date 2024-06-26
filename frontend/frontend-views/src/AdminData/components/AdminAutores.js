@@ -22,8 +22,8 @@ const AdminAutores = () => {
         }
         const data = await response.json();
 
-        // Asegurarse de que cada autor tenga un booksList como array
-        const autoresConBooksList = data.map(autor => ({
+        // Acceder a la lista de autores desde la clave "authors"
+        const autoresConBooksList = data.authors.map(autor => ({
           ...autor,
           booksList: autor.booksList || []
         }));
@@ -66,7 +66,8 @@ const AdminAutores = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewAutor({ ...newAutor, photoProfile: reader.result });
+      const base64String = reader.result.split(',')[1]; // Obtiene solo el base64 sin la parte inicial "data:image/png;base64,"
+      setNewAutor({ ...newAutor, photoProfile: base64String });
     };
     if (file) {
       reader.readAsDataURL(file);
@@ -76,13 +77,13 @@ const AdminAutores = () => {
   const handleAddNewAutor = async () => {
     try {
       // Convertir la cadena de libros separada por comas en una lista de objetos
-      const booksList = newAutor.booksList.split(',').map((book) => ({ title: book.trim() }));
-  
+      const booksList = newAutor.booksList.split(',').map((book) => book.trim());
+
       const autorToSubmit = {
         ...newAutor,
         booksList: booksList
       };
-  
+
       // Realizar la solicitud POST para agregar el nuevo autor
       const response = await fetch('http://localhost:5000/api/author', {
         method: 'POST',
@@ -91,19 +92,25 @@ const AdminAutores = () => {
         },
         body: JSON.stringify(autorToSubmit),
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Error al agregar el autor: ${errorText}`);
       }
-  
+
       // Si la solicitud POST fue exitosa, obtener la lista actualizada de autores
       const updatedAutoresResponse = await fetch('http://localhost:5000/api/author');
       if (!updatedAutoresResponse.ok) {
         throw new Error('Error al obtener la lista de autores actualizada');
       }
-      const updatedAutores = await updatedAutoresResponse.json();
-  
+      const updatedAutoresData = await updatedAutoresResponse.json();
+
+      // Acceder a la lista de autores desde la clave "authors"
+      const updatedAutores = updatedAutoresData.authors.map(autor => ({
+        ...autor,
+        booksList: autor.booksList || []
+      }));
+
       // Actualizar el estado con la lista completa de autores actualizada
       setAutores(updatedAutores);
       setShowModal(false);
@@ -117,7 +124,6 @@ const AdminAutores = () => {
       console.error('Error al agregar el autor', error);
     }
   };
-  
 
   return (
     <div>
@@ -163,7 +169,7 @@ const AdminAutores = () => {
                   <ul>
                     {autor.booksList.map((book, bookIndex) => (
                       <li key={bookIndex}>
-                        <strong>Título {bookIndex + 1}:</strong> {book.title} <br />
+                        <strong>Título {bookIndex + 1}:</strong> {book} <br />
                       </li>
                     ))}
                   </ul>
