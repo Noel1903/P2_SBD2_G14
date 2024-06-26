@@ -5,17 +5,24 @@ import NavBar from './MyNavBar';
 const UserBooks = () => {
     const [books, setBooks] = useState([]);
     const [expandedLibro, setExpandedLibro] = useState(null);
+    //const [currentCartBook, setCurrentCartBook] = useState(null); //para deshabilitar el boton de añadir carrito
     const [showModal, setShowModal] = useState(false); //Para mostrar el fromulario añadir carrito
+    //const [disabledBtn, setDisabledBtn] = useState(false); //Para habilitar el boton de añadir carrito
     const [addToCart, setAddToCart] = useState({
         userId: '',
         book: '',
         quantity: 0,
     });
     
+    useEffect(() => {
+      setAddToCart(prevstate => ({...prevstate, userId: localStorage.getItem('uid')}));
+      
+    }, []);
 
     useEffect(() => {
         const fetchLibros = async () => {
           try {
+            //GET /api/books
             const response = await fetch('http://localhost:5000/api/books');
             if (!response.ok) {
               throw new Error('Error al obtener listado de libros');
@@ -31,9 +38,15 @@ const UserBooks = () => {
         fetchLibros();
       }, []);
 
+      //Para mostrar el detalle de cada libro
       const toggleAccordion = (libroId) => {
         setExpandedLibro(expandedLibro === libroId ? null : libroId);
       };
+
+      /*const toggleEnabledBtnAddToCart = (libroId) => {
+        setDisabledBtn(currentCartBook === libroId ? null : libroId);
+      };*/
+
       const handleAddBook = (e,field) => {
         //const value = e.target.value;
         setAddToCart({ ...addToCart, [field]: e.target.value });
@@ -43,7 +56,9 @@ const UserBooks = () => {
 
       const handleSendToCart = async () => {
         try {
-          const response = await fetch('http://localhost:5000/api/books', {
+          //
+          alert("POST: ",JSON.stringify(addToCart));
+          const response = await fetch('http://localhost:5000/api/cart', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -56,12 +71,13 @@ const UserBooks = () => {
           }
     
           setShowModal(false);
-          setAddToCart({
-            userId: '',
+          //setDisabledBtn(true);
+          setAddToCart(prevstate => ({...prevstate,
+            //userId: '',
             book: '',
             quantity: 0,
             
-          });
+          }));
         } catch (error) {
           console.error('Error al agregar el libro', error);
         }
@@ -75,7 +91,7 @@ const UserBooks = () => {
         {/* Agregar buscar libros */}
         {books.map((libro, index) => {
           const isExpanded = expandedLibro === libro._id;
-          //const isEditable = editableLibro === libro._id;
+          //const isEnabled = currentCartBook === libro._id;
           const collapseId = `collapse${index + 1}`;
 
           return (
@@ -97,8 +113,10 @@ const UserBooks = () => {
                   </button>
                   <button
                     className="btn btn btn-warning"
+                    //id={collapseId}
+                    //disabled={!isEnabled}
                     onClick={() => {setShowModal(true);
-                        setAddToCart({userId: '', book: libro._id, quantity: 0})
+                        setAddToCart(prevstate => ({...prevstate  ,book: libro._id, quantity: 0}));
                     }}
                   >
                     Añadir al carrito
