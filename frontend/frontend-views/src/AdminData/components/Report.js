@@ -18,12 +18,12 @@ const Report = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/top-books');
+        const response = await fetch('http://localhost:5000/api/report');
         if (!response.ok) {
           throw new Error('Error fetching the data');
         }
         const data = await response.json();
-        setBooks(data);
+        setBooks(data.reportBook);
       } catch (error) {
         console.error('Error fetching the data', error);
       }
@@ -44,11 +44,11 @@ const Report = () => {
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={books} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="title" />
+                <XAxis dataKey="bookName" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="sales" fill="#8884d8" />
+                <Bar dataKey="quantity" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
           </div>

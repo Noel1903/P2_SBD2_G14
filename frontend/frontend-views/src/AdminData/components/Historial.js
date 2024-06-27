@@ -14,7 +14,7 @@ const Historial = () => {
           throw new Error('Error al obtener las compras');
         }
         const data = await response.json();
-        setCompras(data.purchases);
+        setCompras(data.ListPurchases);
       } catch (error) {
         console.error('Error fetching compras', error);
       }
@@ -25,7 +25,7 @@ const Historial = () => {
 
   const handleChangeEstado = async (idCompra, nuevoEstado) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/purchases`, {
+      const response = await fetch('http://localhost:5000/api/purchases', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -39,14 +39,14 @@ const Historial = () => {
 
       // Actualizar el estado local después de la actualización exitosa
       const updatedCompras = compras.map(compra => {
-        if (compra._id === idCompra) {
+        if (compra.id === idCompra) {
           return { ...compra, status: nuevoEstado };
         }
         return compra;
       });
       setCompras(updatedCompras);
 
-      //console.log(`Estado de compra ${idCompra} actualizado a ${nuevoEstado}`);
+      console.log(`Estado de compra ${idCompra} actualizado a ${nuevoEstado}`);
     } catch (error) {
       console.error('Error updating compra', error);
     }
@@ -67,7 +67,7 @@ const Historial = () => {
           const collapseId = `collapse${compraNumero}`;
 
           return (
-            <div key={compra._id} className="card mb-3">
+            <div key={compra.id} className="card mb-3">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <h5 className="card-title">Compra {compraNumero}</h5>
@@ -78,7 +78,7 @@ const Historial = () => {
                   <select
                     className="form-select me-3"
                     value={compra.status}
-                    onChange={(e) => handleChangeEstado(compra._id, e.target.value)}
+                    onChange={(e) => handleChangeEstado(compra.id, e.target.value)}
                   >
                     <option value={0}>En Proceso</option>
                     <option value={1}>Enviado</option>
@@ -95,10 +95,11 @@ const Historial = () => {
                 </div>
               </div>
               <div id={collapseId} className={`collapse ${isExpanded ? 'show' : ''}`}>
+              
                 <ul className="list-group list-group-flush">
                   {compra.cart.map((item, idx) => (
-                    <li key={item._id} className="list-group-item">
-                      {item.name} - Cantidad: {item.quantity}
+                    <li key={item.idBook} className="list-group-item">
+                      --{item.book}
                     </li>
                   ))}
                 </ul>
