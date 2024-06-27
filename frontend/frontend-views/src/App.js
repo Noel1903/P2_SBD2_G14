@@ -10,6 +10,7 @@ import UserAuthors from "../src/UserData/components/UserAuthors";
 import UserBooks from "../src/UserData/components/UserBooks";
 import UserCart from "../src/UserData/components/UserCart";
 import UserReview from './UserData/components/UserReview';
+import UserHistory from './UserData/components/UserHistory';
 //administrador
 import AdminPagePrincipal from "../src/AdminData/components/AdminPage";
 import Report from "../src/AdminData/components/Report";
@@ -81,6 +82,7 @@ function App() {
           <Route path='/userbooks' element={<PrivateRoute><UserBooks /></PrivateRoute>} />  
           <Route path='/usercart' element={<PrivateRoute><UserCart /></PrivateRoute>} />
           <Route path='/userreview' element={<PrivateRoute><UserReview /></PrivateRoute>} />
+          <Route path='/userhistory' element={<PrivateRoute><UserHistory /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
     </>
