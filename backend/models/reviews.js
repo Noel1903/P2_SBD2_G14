@@ -16,11 +16,7 @@ const ReviewSchema = Schema({
     rating: {
         type: Number,
         required: [true, 'La calificación es obligatoria']
-    },
-    reviewDate: {
-        type: Date,
-        default: Date.now
-    },
+    }
 }, { collection: 'reviews' });
 
 module.exports = model('Review', ReviewSchema);

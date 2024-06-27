@@ -37,13 +37,11 @@ const getRewiews = async(req, res = response) => {
         const reviews = await Review.find({ IdBook: id });
 
         res.status(200).json({
-            reviews,
-            ok: true
+            reviews
         });
     } catch (error) {
         res.status(500).json({
-            message: 'Error al obtener reseñas ' + error,
-            ok: false
+            message: 'Error al obtener reseñas ' + error
         });
     }
 }

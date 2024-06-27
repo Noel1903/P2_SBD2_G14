@@ -590,3 +590,59 @@ El id que se devuelve NO es del libro, es del item de la colección statistics
     "ok": false
 }
 ```
+---------------------------------------------------------------------------------------
+
+### Crear una reseña de libro
+```
+POST http://localhost:5000/api/reviews
+```
+
+#### Body request
+
+```json
+{
+    "IdUser" : "32145454362632",
+    "IdBook": "667b45cb94159d93b417935b",
+    "review" : "Este es una review",
+    "rating" : 5
+}
+```
+#### Response
+
+```json
+{
+    "ok" : true,
+    "message" : "Reseña creada correctamente"
+}
+```
+
+---------------------------------------------------------------------------
+### Obtener reseñas de libro
+```
+GET http://localhost:5000/api/review/idBook
+```
+
+#### Response
+
+```json
+{
+  "reviews": [
+    {
+      "_id": "667ce803c9e03729b5474c6f",
+      "IdUser": "32145454362632",
+      "IdBook": "667b45cb94159d93b417935b",
+      "review": "Este es una review",
+      "rating": 5,
+      "__v": 0
+    },
+    {
+      "_id": "667ce943c9e03729b5474c76",
+      "IdUser": "rth89498jinf9u",
+      "IdBook": "667b45cb94159d93b417935b",
+      "review": "Este es una review 2",
+      "rating": 4.5,
+      "__v": 0
+    }
+  ]
+}
+```
