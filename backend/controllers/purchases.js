@@ -72,7 +72,7 @@ const addPurchase = async(req, res = response) => {
 const getPurchases = async(req, res = response) => {
     try {
         const purchases = await Purchase.find();
-        const purchasesList = [];
+        var purchasesList = [];
         const ListPurchases = [];
         for (const purchase of purchases) {
             for (const itemCart of purchase.cart) {
@@ -85,10 +85,10 @@ const getPurchases = async(req, res = response) => {
 
                 const book = await Book.findById(cartItem.book); // Obtener el libro asociado al carrito
 
-                if (!book) {
+                /*if (!book) {
                     console.log(`No se encontró el libro con ID: ${cartItem.book}`);
                     continue;
-                }
+                }*/
 
                 purchasesList.push({
                     idBook: book._id,
@@ -106,6 +106,7 @@ const getPurchases = async(req, res = response) => {
                 status: purchase.status
             };
             ListPurchases.push(Purchases);
+            purchasesList = [];
         }
 
         
@@ -126,7 +127,7 @@ const getPurchasesByUser = async(req, res = response) => {
 
     try {
         const purchases = await Purchase.find({ userId });
-        const purchasesList = [];
+        var purchasesList = [];
         const ListPurchases = [];
         for (const purchase of purchases) {
             for (const itemCart of purchase.cart) {
@@ -139,10 +140,10 @@ const getPurchasesByUser = async(req, res = response) => {
 
                 const book = await Book.findById(cartItem.book); // Obtener el libro asociado al carrito
 
-                if (!book) {
+                /*if (!book) {
                     console.log(`No se encontró el libro con ID: ${cartItem.book}`);
                     continue;
-                }
+                }*/
 
                 purchasesList.push({
                     idBook: book._id,
@@ -160,6 +161,7 @@ const getPurchasesByUser = async(req, res = response) => {
                 status: purchase.status
             };
             ListPurchases.push(Purchases);
+            purchasesList = [];
         }
 
         
