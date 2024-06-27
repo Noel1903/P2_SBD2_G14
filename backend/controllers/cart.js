@@ -39,6 +39,7 @@ const getCart = async(req, res = response) => {
                     nombre: bookCart.Titulo,
                     price: bookCart.precio,
                     quantity: item.quantity,
+                    idBook: item.book
                 }
                 arrayBooks.push(book);
             }
