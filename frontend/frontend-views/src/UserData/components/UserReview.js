@@ -14,6 +14,7 @@ const UserReview = () => {
       review: '',
       rating: 0,
     });
+    const [currentBook, setCurrentBook] = useState({});//[{}
 
     //Guardo el id del usuario en el estado singleReview
     useEffect(() => {
@@ -40,9 +41,9 @@ const UserReview = () => {
       }, []);
 
       // Listado de reseñas para un libro específico
-      const handleViewReviews = async (id) => {
+      const handleGetReviews = async (id) => {
         try {
-          const response = await fetch(`http://localhost:5000/api/reviews/:${id}`);
+          const response = await fetch(`http://localhost:5000/api/reviews/${id}`);
           if (!response.ok) {
            alert('Error al obtener reseñas');
            throw new Error('Error al obtener reseñas');
@@ -55,13 +56,41 @@ const UserReview = () => {
           console.error('Error al obtener las reseñas', error);
         }
       }
-
+  
       // Nueva Reseña
+      // Guardar la nueva reseña
+      const handleSaveReview = async () => {
+        try {
+          //
+          //alert("POST: user:"+ singleReview.IdUser+" book:"+ singleReview.IdBook+" review:"+singleReview.review+" rating:"+singleReview.rating);
+          const response = await fetch('http://localhost:5000/api/reviews', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(singleReview),
+          });
+    
+          if (!response.ok) {
+            throw new Error('Error al agregar el libro');
+          }
+    
+          setShowModal(false);
+          // Reiniciar la variable excepto el id del usuario
+          setSingleReview(prevstate => ({...prevstate,
+            IdBook: '',
+            review: '',
+            rating: 0,
+          }));
+        } catch (error) {
+          console.error('Error al agregar el libro', error);
+        }
+      };
 
       //  Para guardar los datos del fromulario
-     /* const handleAddReview = (e,field) => {
+      const handleAddReview = (e,field) => {
         setSingleReview({ ...singleReview, [field]: e.target.value });
-      }*/
+      }
 
   return (
     <div>
@@ -89,21 +118,24 @@ const UserReview = () => {
                   <div className="card-body d-flex justify-content-between align-items-center">
                     <div>
                       <h5 className="card-title">{libro.Titulo}</h5>
-                      <p className="card-text">Autor: {libro.autor}</p>
-                      <p className="card-text">Descripción: {libro.descripcion}</p>
+                      <p className="card-text"><b>Autor:</b> {libro.autor}
+                        <br /><b>Descripción:</b> {libro.descripcion}
+                        <br /><b>Puntuación:</b> {libro.puntuacion_promedio}</p>
                     </div>
                     <div className="d-flex align-items-center">
                       <button
                         className="btn btn-primary me-2"
                         onClick={() => {
-                          setShowModalReviews(true);
+                          handleGetReviews(libro._id);setShowModalReviews(true);
                         }}
                       >
                         Ver Reseñas
                       </button>
                       <button
                         className="btn btn-success"
-                        onClick={() => {handleViewReviews(libro._id);setShowModal(true);}}
+                        onClick={() => {setShowModal(true);
+                            setSingleReview(prevstate => ({...prevstate  ,IdBook: libro._id}));
+                        }}
                       >
                         Añadir reseña
                       </button>
@@ -132,7 +164,7 @@ const UserReview = () => {
                       type="number"
                       className="form-control"
                       value={singleReview.rating}
-                      //onChange={(e) => handleAddBook(e, 'quantity')}
+                      onChange={(e) => handleAddReview(e, 'rating')}
                     />
                   </div>
                   <div className="mb-3">
@@ -141,7 +173,7 @@ const UserReview = () => {
                       type="text"
                       className="form-control"
                       value={singleReview.review}
-                      //onChange={(e) => handleAddBook(e, 'quantity')}
+                      onChange={(e) => handleAddReview(e, 'review')}
                     />
                   </div>
                 </div>
@@ -150,7 +182,7 @@ const UserReview = () => {
                     Cancelar
                   </button>
                   <button type="button" className="btn btn-primary" 
-                  //onClick={handleSendToCart}
+                  onClick={handleSaveReview}
                   >
                     Guardar
                   </button>
@@ -160,13 +192,13 @@ const UserReview = () => {
           </div>
         )}
 
-        {/*Reseñas*/}
+        {/*Mostrar Reseñas*/}
         {showModalReviews && (
           <div className="modal show d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Ver reseñas</h5>
+                <h5 className="modal-title">Opiniones</h5>
                 <button type="button" className="btn-close" onClick={() => setShowModalReviews(false)}></button>
               </div>
               <div className="modal-body">

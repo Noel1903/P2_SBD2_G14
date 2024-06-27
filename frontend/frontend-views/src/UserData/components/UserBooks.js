@@ -56,8 +56,7 @@ const UserBooks = () => {
 
       const handleSendToCart = async () => {
         try {
-          //
-          alert("POST: ",JSON.stringify(addToCart));
+          // alert("POST: ",JSON.stringify(addToCart));
           const response = await fetch('http://localhost:5000/api/cart', {
             method: 'POST',
             headers: {
