@@ -646,3 +646,80 @@ GET http://localhost:5000/api/review/idBook
   ]
 }
 ```
+
+
+### Consultas MongoDB
+
+### Obtener la colección completa
+
+### Authors
+```javascript
+db.authors.find()
+db.authors.findOne({ _id: ObjectId("author_id") })
+db.authors.updateOne(
+    { _id: ObjectId("author_id") },
+    { $set: { field: "new_value" } }
+)
+db.authors.deleteOne({ _id: ObjectId("author_id") })
+
+
+```
+
+
+### Books
+```javascript
+db.books.find()
+db.books.findOne({ _id: ObjectId("book_id") })
+db.books.updateOne(
+    { _id: ObjectId("book_id") },
+    { $set: { field: "new_value" } }
+)
+db.books.deleteOne({ _id: ObjectId("book_id") })
+
+
+```
+
+### Carts
+```javascript
+db.carts.find()
+db.carts.findOne({ _id: ObjectId("cart_id") })
+db.carts.updateOne(
+    { _id: ObjectId("cart_id") },
+    { $set: { field: "new_value" } }
+)
+db.carts.deleteOne({ _id: ObjectId("cart_id") })
+
+
+```
+
+
+### Purchases
+```javascript
+db.purchases.find()
+db.purchases.findOne({ _id: ObjectId("purchase_id") })
+
+```
+
+### Reviews
+```javascript
+db.reviews.find()
+db.reviews.findOne({ _id: ObjectId("id_book") })
+
+```
+
+### Stadistics
+```javascript
+db.statistics.find()
+```
+
+### Users
+```javascript
+db.users.find()
+db.users.findOne({ _id: ObjectId("user_id") })
+db.users.updateOne(
+    { _id: ObjectId("user_id") },
+    { $set: { field: "new_value" } }
+)
+db.users.deleteOne({ _id: ObjectId("user_id") })
+```
+
