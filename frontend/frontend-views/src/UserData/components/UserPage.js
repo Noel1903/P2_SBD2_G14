@@ -9,7 +9,6 @@ const UserPage = ({ userData }) => {
     const [telefono, setTelefono] = useState('');
     const [direccion, setDireccion] = useState('');
     const [emailState, setEmail] = useState('');
-    const [contrasena, setContrasena] = useState('');
     const [imagen, setImagen] = useState(null);
     const [imagen2, setImagen2] = useState(null);
     const [imagenBase64, setImagenBase64] = useState('');
@@ -49,7 +48,6 @@ const UserPage = ({ userData }) => {
             name: nombre,
             lastname: apellido,
             email: emailState,
-            password: contrasena,
             address: direccion,
             imgProfile: imagenBase64,
             telephone: telefono,            
@@ -137,12 +135,6 @@ const UserPage = ({ userData }) => {
                             </div>
                             <div className='mb-3'>
                                 <input className='inputsignup' type="email" name="Email" placeholder="Ingrese su correo" value={emailState} onChange={(e) => setEmail(e.target.value)} required />
-                            </div>
-                            <div className='mb-3'>
-                                <label className='labelsignup'>Contraseña</label>
-                            </div>
-                            <div className='mb-3'>
-                                <input className='inputsignup' type="password" name="Contrasenia" placeholder="Ingrese su contraseña para confirmar" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                             </div>
                             <div className='mb-3'>
                                 <button type="submit" className="butonsignup">
